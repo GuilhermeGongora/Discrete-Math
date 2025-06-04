@@ -30,7 +30,7 @@ export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
     if (
       mode === "gaussian" &&
       Array.isArray(solution) &&
-      typeof (solution as any)[0] === "number"
+      typeof solution[0] === "number"
     ) {
       const sol = solution as number[];
       return (
@@ -49,7 +49,7 @@ export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
     if (
       mode === "inverse" &&
       Array.isArray(solution) &&
-      Array.isArray((solution as any)[0])
+      Array.isArray(solution?.[0])
     ) {
       const inv = solution as Fraction[][];
       return (
@@ -120,7 +120,7 @@ export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
                     // Fração?
                     if (
                       typeof cell === "object" &&
-                      typeof (cell as any).toFraction === "function"
+                      typeof (cell as Fraction).toFraction === "function"
                     ) {
                       return (
                         <td
