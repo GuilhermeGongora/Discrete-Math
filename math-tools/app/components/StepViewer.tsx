@@ -137,7 +137,7 @@ export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
                         key={j}
                         className="border px-3 py-1 text-right min-w-[3rem]"
                       >
-                        {(cell as number).toFixed(3)}
+                        {(cell as number).toFixed(0)}
                       </td>
                     );
                   })}
@@ -177,7 +177,7 @@ export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
           <ul className="list-disc list-inside">
             {(solution as number[]).map((x, idx) => (
               <li key={idx}>
-                x<sub>{idx + 1}</sub> = {x.toFixed(3)}
+                x<sub>{idx + 1}</sub> = {x.toFixed(0)}
               </li>
             ))}
           </ul>
@@ -187,7 +187,7 @@ export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
       {mode === "determinant" && typeof solution === "number" && (
         <div className="mt-4 text-center">
           <h3 className="font-semibold">Determinante:</h3>
-          <span className="text-xl">{solution.toFixed(3)}</span>
+          <span className="text-xl">{solution.toFixed(0)}</span>
         </div>
       )}
     </div>
