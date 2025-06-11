@@ -1,4 +1,3 @@
-// components/MatrixInput.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,36 +9,52 @@ import StepViewer from "./StepViewer";
 
 type Mode = "gaussian" | "inverse" | "determinant";
 
-export default function MatrixInputDynamic() {
-  const [mode, setMode] = useState<Mode>("gaussian");
+interface MatrixInputProps {
+  mode: Mode;
+}
+
+export default function MatrixInputDynamic({ mode }: MatrixInputProps) {
   const [rows, setRows] = useState(3);
-  const [cols, setCols] = useState(4); // for gaussian cols = rows+1 by default
+  const [cols, setCols] = useState(mode === "gaussian" ? 4 : 3);
+  const effectiveCols = mode === "gaussian" ? rows + 1 : cols;
 
-  // adjust cols when mode or rows change
-  const computedCols = mode === "gaussian" ? rows + 1 : cols;
-
-  const [matrix, setMatrix] = useState<string[][]>(
-    Array.from({ length: rows }, () => Array(computedCols).fill("0"))
+  const [matrix, setMatrix] = useState<string[][]>(() =>
+    Array.from({ length: rows }, () => Array(effectiveCols).fill(""))
   );
+
   const [steps, setSteps] = useState<(number | Fraction)[][][]>([]);
   const [solution, setSolution] = useState<number[] | number | Fraction[][]>();
 
-  // regenerate matrix when dims change
   useEffect(() => {
-    const newCols = mode === "gaussian" ? rows + 1 : cols;
-    setMatrix(Array.from({ length: rows }, () => Array(newCols).fill("0")));
+    if (mode === "inverse") {
+      setCols(rows);
+    }
+  }, [rows, mode]);
+
+  useEffect(() => {
+    setMatrix(
+      Array.from({ length: rows }, () =>
+        Array(mode === "gaussian" ? rows + 1 : cols).fill("")
+      )
+    );
     setSteps([]);
     setSolution(undefined);
-  }, [mode, rows, cols]);
+  }, [rows, cols, mode]);
 
-  function handleChange(i: number, j: number, val: string) {
+  const handleChange = (i: number, j: number, val: string) => {
     const copy = matrix.map((r) => [...r]);
     copy[i][j] = val;
     setMatrix(copy);
-  }
+  };
 
-  function handleSolve() {
-    const numMat = matrix.map((r) => r.map((v) => parseFloat(v) || 0));
+  const handleSolve = () => {
+    const numMat = matrix.map((r) =>
+      r.map((v) => {
+        const n = parseFloat(v);
+        return isNaN(n) ? 0 : n;
+      })
+    );
+
     switch (mode) {
       case "gaussian": {
         const { steps: s, solution: sol } = gaussianElimination(numMat);
@@ -65,41 +80,40 @@ export default function MatrixInputDynamic() {
         break;
       }
     }
-  }
+  };
 
   return (
-    <div className="space-y-4">
-      <div className="flex gap-4">
-        <label>
-          Modo:
-          <select
-            value={mode}
-            onChange={(e) => setMode(e.target.value as Mode)}
-          >
-            <option value="gaussian">Sistemas Lineares</option>
-            <option value="inverse">Matriz Inversa</option>
-            <option value="determinant">Determinantes</option>
-          </select>
-        </label>
-        <label>
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-4 items-center">
+        <label className="flex flex-col">
           Linhas:
           <input
             type="number"
-            value={rows}
-            onChange={(e) => setRows(Math.max(2, parseInt(e.target.value)))}
             min={2}
-            max={10}
+            max={20}
+            value={rows}
+            onChange={(e) => {
+              const val = parseInt(e.target.value);
+              if (!isNaN(val)) setRows(Math.max(2, Math.min(20, val)));
+            }}
+            className="border p-1 rounded text-center w-20"
           />
         </label>
+
         {mode !== "gaussian" && (
-          <label>
+          <label className="flex flex-col">
             Colunas:
             <input
               type="number"
-              value={cols}
-              onChange={(e) => setCols(Math.max(2, parseInt(e.target.value)))}
               min={2}
-              max={10}
+              max={20}
+              value={cols}
+              onChange={(e) => {
+                const val = parseInt(e.target.value);
+                if (!isNaN(val)) setCols(Math.max(2, Math.min(20, val)));
+              }}
+              disabled={mode === "inverse"}
+              className="border p-1 rounded text-center w-20"
             />
           </label>
         )}
@@ -108,7 +122,7 @@ export default function MatrixInputDynamic() {
       <div
         className="grid gap-2"
         style={{
-          gridTemplateColumns: `repeat(${computedCols}, minmax(3rem,1fr))`,
+          gridTemplateColumns: `repeat(${effectiveCols}, minmax(3rem, 1fr))`,
         }}
       >
         {matrix.map((row, i) =>
@@ -117,8 +131,9 @@ export default function MatrixInputDynamic() {
               key={`${i}-${j}`}
               type="number"
               value={val}
+              placeholder="0"
               onChange={(e) => handleChange(i, j, e.target.value)}
-              className="border p-1 text-center rounded"
+              className="border rounded p-1 text-center"
             />
           ))
         )}
@@ -126,7 +141,7 @@ export default function MatrixInputDynamic() {
 
       <button
         onClick={handleSolve}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
       >
         Resolver
       </button>

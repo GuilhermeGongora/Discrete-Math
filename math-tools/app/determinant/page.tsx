@@ -2,9 +2,9 @@
 import MatrixInputDynamic from "../components/MatrixInputDynamic";
 export default function DeterminantPage() {
   return (
-    <div className="p-6">
+    <div className="p-6 min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-blue-900 via-gray-800 to-blue-950 font-sans">
       <h1 className="text-2xl font-bold mb-4">Determinante</h1>
-      <MatrixInputDynamic />
+      <MatrixInputDynamic mode="determinant" />
     </div>
   );
 }
