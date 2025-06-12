@@ -1,10 +1,11 @@
+// app/components/Navbar.tsx
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
-  const path = usePathname();
+  const pathname = usePathname();
 
   const links = [
     { href: "/gaussian", label: "Escalonamento" },
@@ -13,45 +14,43 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-transparent">
-      {/* Backdrop Layer */}
-      <div className="absolute inset-0 " />
+    /* sticky → gruda no topo | backdrop-blur para leve desfoque em scroll */
+    <nav className="sticky top-0 z-40 w-full bg-transparent backdrop-blur-md shadow-sm justify-center">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Logo / Home (sempre visível) */}
+        <Link
+          href="/"
+          className="text-xl sm:text-2xl font-bold text-white hover:text-blue-300 transition-colors"
+        >
+          Gaussávio😎
+        </Link>
 
-      {/* Navbar Content */}
-      <div className="relative w-full px-4 py-6 flex justify-center">
-        <div className="flex flex-col sm:flex-row items-center sm:space-x-6 space-y-4 sm:space-y-0 text-center">
-          <Link
-            href="/"
-            className="text-2xl font-bold tracking-tight hover:text-blue-400 transition-colors z-10"
-          >
-            Math Tools
-          </Link>
-
-          <ul className="flex flex-col sm:flex-row sm:space-x-6 space-y-2 sm:space-y-0 z-10">
-            {links.map((link) => {
-              const isActive = path === link.href;
-              return (
-                <li key={link.href} className="relative group">
-                  <Link
-                    href={link.href}
-                    className={`px-3 py-1 font-medium transition-colors duration-300 ${
-                      isActive ? "text-blue-400" : "hover:text-blue-300"
+        {/* Links extras — exibidos APENAS em ≥ sm */}
+        <ul className="hidden sm:flex items-center space-x-6 text-white text-sm md:text-base">
+          {links.map(({ href, label }) => {
+            const active = pathname === href;
+            return (
+              <li key={href} className="relative group">
+                <Link
+                  href={href}
+                  className={`px-2 py-1 transition-colors ${
+                    active ? "text-blue-300" : "hover:text-blue-300"
+                  }`}
+                >
+                  {label}
+                  {/* sub-linha animada */}
+                  <span
+                    className={`absolute left-0 -bottom-0.5 h-[2px] w-full bg-blue-300 transition-transform duration-300 ${
+                      active
+                        ? ""
+                        : "scale-x-0 group-hover:scale-x-100 origin-left"
                     }`}
-                  >
-                    {link.label}
-                    <span
-                      className={`absolute left-0 -bottom-1 h-[2px] w-full bg-blue-400 transition-transform duration-300 transform ${
-                        isActive
-                          ? ""
-                          : "scale-x-0 group-hover:scale-x-100 origin-left"
-                      }`}
-                    />
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+                  />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </nav>
   );

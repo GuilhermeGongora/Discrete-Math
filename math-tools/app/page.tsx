@@ -25,7 +25,7 @@ const tools = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-blue-950 via-gray-900 to-blue-950 font-sans">
+    <div className="min-h-screen w-full overflow-x-hidden  font-sans">
       <motion.div
         className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-12 space-y-8 text-white"
         variants={pageVariants}
@@ -33,7 +33,7 @@ export default function Home() {
         animate="visible"
       >
         <h1 className="text-4xl sm:text-5xl font-bold text-center drop-shadow-lg tracking-tight">
-          Math Tools
+          Gaussávio😎
         </h1>
 
         <p className="text-base sm:text-lg text-blue-200 text-center max-w-md">
