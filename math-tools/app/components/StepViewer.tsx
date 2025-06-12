@@ -13,7 +13,20 @@ type StepViewerProps = {
 };
 
 export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
-  if (!steps.length) {
+  /** 🟢 Hooks sempre no topo, sem condições */
+  const [index, setIndex] = useState(0);
+
+  const hasSteps = steps.length > 0;
+  const max = hasSteps ? steps.length - 1 : 0;
+  const navBtn =
+    "px-3 py-1 bg-gray-200 rounded disabled:opacity-50 dark:bg-gray-700";
+
+  /* ──────────────────────────────────────────────── */
+  /* BLOCO DE RENDERIZAÇÃO                           */
+  /* ──────────────────────────────────────────────── */
+
+  if (!hasSteps) {
+    /* Apenas resultado final */
     if (mode === "determinant" && typeof solution === "number") {
       return (
         <div className="mt-6 text-center">
@@ -22,6 +35,7 @@ export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
         </div>
       );
     }
+
     if (mode === "gaussian" && Array.isArray(solution)) {
       return (
         <div className="mt-6">
@@ -37,6 +51,7 @@ export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
         </div>
       );
     }
+
     if (
       mode === "inverse" &&
       Array.isArray(solution) &&
@@ -49,14 +64,11 @@ export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
         </div>
       );
     }
+
     return null;
   }
 
-  const [index, setIndex] = useState(0);
-  const max = steps.length - 1;
-  const navBtn =
-    "px-3 py-1 bg-gray-200 rounded disabled:opacity-50 dark:bg-gray-700";
-
+  /* Há passos ─ mostra slideshow + resultados finais  */
   return (
     <div className="mt-6 space-y-4">
       {steps.length > 1 && (
@@ -95,7 +107,7 @@ export default function StepViewer({ mode, steps, solution }: StepViewerProps) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Blocos de resultado final (opcionais) ------------------------ */}
+      {/* Resultados finais ---------------------------------------- */}
       {mode === "inverse" && Array.isArray(solution) && (
         <>
           <h3 className="font-semibold text-center">Inversa Final:</h3>
